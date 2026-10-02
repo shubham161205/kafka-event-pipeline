@@ -1,6 +1,3 @@
-# kafka-event-pipeline
-A Docker-based Kafka event processing pipeline using Python, with automated tests and CI. A real-time event processing pipeline built with Python and Apache Kafka. It uses Docker Compose to manage Kafka, ZooKeeper, a message producer, and a consumer that validates and processes order events. Includes automated tests and GitHub Actions CI.
-
 # Real-Time Kafka Event Processing Pipeline
 
 A Docker-based, real-time event processing system built using **Python, Apache Kafka, and Docker Compose**. This project demonstrates how distributed applications exchange and process messages asynchronously using a Kafka-based producer-consumer architecture.
@@ -33,37 +30,37 @@ The application generates sample order events, publishes them to a Kafka topic, 
 ## System Architecture
 
 ```text
-             Order Events
-                  |
-                  v
-          +---------------+
-          | Python        |
-          | Producer      |
-          +---------------+
-                  |
-                  v
-          +---------------+
-          | Apache Kafka  |
-          | orders topic  |
-          +---------------+
-                  |
-                  v
-          +---------------+
-          | Python        |
-          | Consumer      |
-          +---------------+
-                  |
-                  v
-          +---------------+
-          | Validation &  |
-          | Processing    |
-          +---------------+
-                  |
-                  v
-          +---------------+
-          | JSONL Output  |
-          | File          |
-          +---------------+
+Order Events
+     |
+     v
++---------------+
+| Python        |
+| Producer      |
++---------------+
+     |
+     v
++---------------+
+| Apache Kafka  |
+| orders topic  |
++---------------+
+     |
+     v
++---------------+
+| Python        |
+| Consumer      |
++---------------+
+     |
+     v
++---------------+
+| Validation &  |
+| Processing    |
++---------------+
+     |
+     v
++---------------+
+| JSONL Output  |
+| File          |
++---------------+
 ```
 
 ZooKeeper coordinates the Kafka broker in this Docker Compose environment.
@@ -103,10 +100,10 @@ The `data` directory is created or populated when the consumer processes events.
 
 ## Prerequisites
 
-Install the following tools before running the project:
+Install the following tools:
 
 * Python 3.11 or a compatible version
-* Docker Desktop
+* Docker Desktop with Docker Compose
 * Git
 * Visual Studio Code (recommended)
 
@@ -117,18 +114,13 @@ Make sure Docker Desktop is running before starting the containers.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/kafka-event-pipeline.git
-```
-
-Navigate to the project directory:
-
-```bash
+git clone https://github.com/shubham161205/kafka-event-pipeline.git
 cd kafka-event-pipeline
 ```
 
 ### 2. Install Python dependencies
 
-Create a virtual environment (optional but recommended):
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -172,6 +164,13 @@ View the consumer logs:
 docker compose logs consumer
 ```
 
+You can also follow the logs continuously:
+
+```bash
+docker compose logs -f producer
+docker compose logs -f consumer
+```
+
 ### 4. Verify processed events
 
 The consumer saves processed order events to:
@@ -195,6 +194,8 @@ Example output:
 
 The output confirms that the consumer has processed the corresponding order events.
 
+The producer sends sample orders and exits, while the consumer remains available to receive events.
+
 ### 5. Stop the application
 
 Stop and remove the running containers:
@@ -213,15 +214,21 @@ Use the second command only when you intend to remove the stored Kafka and ZooKe
 
 ## Running Automated Tests
 
-The project includes unit tests for event validation and consumer processing.
+The project includes unit tests for event creation, validation, consumer processing, and file output.
 
-Run the tests using:
+Install the dependencies if you have not already done so:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Run the tests:
 
 ```bash
 python -m pytest -v
 ```
 
-The test suite checks application behavior without requiring the full Kafka environment for its unit tests.
+The unit tests do not require a running Kafka broker.
 
 ## Continuous Integration with GitHub Actions
 
@@ -233,14 +240,14 @@ This repository includes a GitHub Actions workflow:
 
 The workflow automatically installs Python dependencies and runs the pytest test suite when changes are pushed or pull requests are opened, according to the configured triggers.
 
-This helps detect code issues before changes are merged.
-
 To view the workflow results:
 
 1. Open the repository on GitHub.
 2. Select the **Actions** tab.
 3. Open the latest workflow run.
 4. Review the test results and logs.
+
+For additional protection, a GitHub branch protection rule can be configured to require the test status check before merging changes into `main`.
 
 ## Example Workflow
 
@@ -250,6 +257,20 @@ To view the workflow results:
 4. The consumer validates each order.
 5. Valid orders are marked as `PROCESSED`.
 6. Processed events are written to the JSON Lines output file.
+
+## Concepts Demonstrated
+
+* Event-driven architecture
+* Producer-consumer pattern
+* Apache Kafka topics and messages
+* Kafka consumer groups and offsets
+* Asynchronous message processing
+* Data validation
+* Service separation
+* Docker containerization
+* Docker Compose orchestration
+* Automated unit testing with pytest
+* Continuous integration using GitHub Actions
 
 ## Learning Outcomes
 
@@ -263,6 +284,14 @@ This project provides practical experience with:
 * Unit testing with pytest
 * Continuous integration using GitHub Actions
 
+## Scope and Limitations
+
+This project is designed as an educational demonstration of Kafka-based event processing.
+
+The current setup uses a single Kafka broker and a consumer instance. It is not configured for broker high availability or exactly-once processing.
+
+In certain failure scenarios, such as a crash after writing an output record but before committing a Kafka offset, duplicate output records may occur.
+
 ## Future Improvements
 
 * Add a dead-letter topic for invalid events.
@@ -271,6 +300,8 @@ This project provides practical experience with:
 * Add retry mechanisms for transient processing failures.
 * Support configurable event generation and larger message volumes.
 * Add integration tests that run against a live Kafka broker.
+* Add multiple Kafka brokers for improved availability.
+* Add monitoring and metrics for production-style deployments.
 
 ## License
 
